@@ -1,0 +1,25 @@
+[package]
+name = "curio-buildtracker"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+lambda_runtime = "0.13"
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tracing = { version = "0.1", features = ["log"] }
+tracing-subscriber = { version = "0.3", default-features = false, features = ["fmt"] }
+aws_lambda_events = { version = "0.15", features = ["sqs"] }
+curio-db = { path = "../curio-db" }
+async-trait = "0.1"
+anyhow = "1"
+md5 = "0.7"
+tera = "1"
+jmespath = "0.3"
+polars = { version = "0.35", features = ["lazy", "csv", "sql", "strings"] }
+aws-config = { version = "1", features = ["behavior-version-latest"] }
+aws-sdk-s3 = "1"
+reqwest = { version = "0.11", features = ["json", "stream"] }
+bytes = "1"
+uuid = { version = "1", features = ["v4"] }

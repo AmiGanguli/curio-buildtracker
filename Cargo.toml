@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "crates/curio-buildtracker",
+    "crates/curio-db",
+]
+resolver = "2"

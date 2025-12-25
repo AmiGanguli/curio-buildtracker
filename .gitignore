@@ -1,0 +1,24 @@
+# Rust
+/target/
+**/*.rs.bk
+
+# Python / CDK
+__pycache__/
+*.pyc
+cdk/.venv/
+cdk/cdk.out/
+
+# Local Dev Services & Data
+/bin/
+.moto_data/
+*.db
+dynamodb-local-metadata.json
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
+
+# OS
+.DS_Store
+Thumbs.db
