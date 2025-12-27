@@ -31,7 +31,7 @@ class RustFunction(Construct):
             runtime=lambda_.Runtime.PROVIDED_AL2023,
             handler="bootstrap",
             code=lambda_.Code.from_asset("../target/lambda/curio-buildtracker"),
-            architecture=lambda_.Architecture.ARM_64,
+            architecture=lambda_.Architecture.X86_64,
             memory_size=128,
             timeout=Duration.seconds(30),
             environment={

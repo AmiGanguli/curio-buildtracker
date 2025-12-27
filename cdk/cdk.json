@@ -31,7 +31,6 @@
         "@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption": true,
         "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
         "@aws-cdk/core:stackRelativeExports": "true",
-        "@aws-cdk/aws-ecr-assets:dockerIgnoreSupport": true,
         "@aws-cdk/aws-secretsmanager:parseOwnedSecretName": true,
         "@aws-cdk/aws-kms:aliasNameRef": true,
         "@aws-cdk/core:newStyleStackSynthesis": true,
@@ -43,6 +42,7 @@
         "@aws-cdk/aws-opensearchservice:enableOpensearchMulti Az": true,
         "@aws-cdk/aws-efs:defaultEncryptionAtRest": true,
         "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true,
-        "@aws-cdk/core:includePrefixInUniqueNameGeneration": true
+        "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
+        "@aws-cdk/custom-resources:installLatestAwsSdkDefault": false
     }
 }

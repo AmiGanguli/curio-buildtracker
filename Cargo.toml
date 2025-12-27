@@ -2,5 +2,6 @@
 members = [
     "crates/curio-buildtracker",
     "crates/curio-db",
+    "crates/curio-processor",
 ]
 resolver = "2"
