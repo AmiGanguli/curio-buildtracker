@@ -22,6 +22,7 @@ This project is a **Rust Workspace**:
 - `crates/curio-db/`: Shared library for DynamoDB operations.
 - `cdk/`: Python CDK infrastructure.
   - Deploys SQS, DynamoDB, and Lambda.
+- `frontend/`: React admin interface. [See Setup Guide](docs/frontend.md).
 - `scripts/`: Helper scripts for local development.
 
 ## Build & Deploy

@@ -1,0 +1,9 @@
+artifacts: []
+
+external_inputs:
+  - name: "harvest_jobs"
+    bucket: "curiojobsstack-harvestbucket59f496a8-j6f8fjlfx2kb"
+    prefix: null
+    match: "(?P<ats>[^/]+)/tokens/(?P<token>[^/]+)/jobs_by_id/(?P<job_id>\\d+)\\.json"
+
+workflows: []

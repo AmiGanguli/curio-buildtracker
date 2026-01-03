@@ -8,20 +8,30 @@ from aws_cdk import (
     aws_cloudwatch as cloudwatch,
     aws_cloudwatch_actions as cw_actions,
     aws_applicationautoscaling as appscaling,
+    aws_s3 as s3,
+    aws_dynamodb as dynamodb,
     Duration,
     RemovalPolicy,
 )
 from constructs import Construct
 
 class BuildManager(Construct):
-    def __init__(self, scope: Construct, construct_id: str, cluster: ecs.Cluster, cpu: int = 256, memory_limit_mib: int = 512, max_capacity: int = 200, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, cluster: ecs.Cluster, table: dynamodb.Table = None, status_table: dynamodb.Table = None, cpu: int = 256, memory_limit_mib: int = 512, max_capacity: int = 200, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         # 1. Event Bus
         self.bus = events.EventBus(self, "BuildManagerBus", event_bus_name="curio.buildmanager")
 
-        # 2. SQS Queue
-        self.queue = sqs.Queue(self, "BuildQueue", visibility_timeout=Duration.seconds(60))
+        # 2. S3 Bucket
+        self.bucket = s3.Bucket(self, "BuildBucket",
+            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
+            encryption=s3.BucketEncryption.S3_MANAGED,
+            removal_policy=RemovalPolicy.DESTROY, 
+            auto_delete_objects=True,
+        )
+
+        # 3. SQS Queue
+        self.queue = sqs.Queue(self, "BuildQueue", visibility_timeout=Duration.minutes(10))
 
         # 3. ECS Service
         task_def = ecs.FargateTaskDefinition(
@@ -33,12 +43,15 @@ class BuildManager(Construct):
 
         container = task_def.add_container(
             "ProcessorContainer",
-            image=ecs.ContainerImage.from_asset("../crates/curio-processor"),
+            image=ecs.ContainerImage.from_asset("../crates", file="curio-processor/Dockerfile"),
             logging=ecs.LogDriver.aws_logs(stream_prefix="CurioProcessor"),
             environment={
                 "QUEUE_URL": self.queue.queue_url,
                 "CONCURRENCY": str( max(1, cpu // 1024 * 4) ), # Rough default, can be tuned
                 "RUST_LOG": "info",
+                "TABLE_NAME": table.table_name if table else "",
+                "STATUS_TABLE": status_table.table_name if status_table else "",
+                "BUILD_BUCKET": self.bucket.bucket_name,
             },
             stop_timeout=Duration.seconds(60),
         )
@@ -55,6 +68,11 @@ class BuildManager(Construct):
 
         # Grant permissions
         self.queue.grant_consume_messages(task_def.task_role)
+        self.bucket.grant_read(task_def.task_role)
+        if table:
+            table.grant_read_write_data(task_def.task_role)
+        if status_table:
+            status_table.grant_write_data(task_def.task_role)
 
         # 4. Rules
         
@@ -166,6 +184,6 @@ class BuildManager(Construct):
         scale_down_policy = scaling.node.try_find_child("ScaleZeroPolicy")
         if scale_down_policy and hasattr(scale_down_policy, 'lower_alarm') and scale_down_policy.lower_alarm:
             scale_down_policy.lower_alarm.threshold = 0
-            scale_down_policy.lower_alarm.datapoints_to_alarm = 1
-            scale_down_policy.lower_alarm.evaluation_periods = 1
+            scale_down_policy.lower_alarm.datapoints_to_alarm = 5
+            scale_down_policy.lower_alarm.evaluation_periods = 5
             scale_down_policy.lower_alarm.treat_missing_data = cloudwatch.TreatMissingData.BREACHING

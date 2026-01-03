@@ -26,7 +26,20 @@ artifacts:
   - type: "ats_config"
     match: "(?P<ats_id>[^/]+)/config\\.json"
 
-# 2. WORKFLOW RULES
+# 3. EXTERNAL INPUTS
+# Defines inputs that are not managed artifacts but external S3 objects.
+# Fields:
+#   name: Unique identifier for this input group.
+#   bucket: The source S3 bucket.
+#   prefix: (Optional) S3 prefix to narrow down the listing.
+#   match: Regex to capture metadata from keys.
+external_inputs:
+  - name: "marketing_data"
+    bucket: "my-external-data-bucket"
+    # Regex match similar to artifacts. Captures become metadata.
+    match: "marketing/(?P<year>\\d{4})/(?P<campaign_id>[^/]+)\\.csv"
+
+# 4. WORKFLOW RULES
 # Defines the DAG construction logic triggering on artifact events.
 workflows:
   # CASE 1: Document Analysis

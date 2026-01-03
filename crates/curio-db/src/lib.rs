@@ -10,7 +10,7 @@ pub mod storage;
 pub use storage::ArtifactStorage;
 
 pub mod config;
-pub use config::CurioConfig;
+pub use config::{CurioConfig, ExternalInputRule};
 
 pub struct CurioDbClient {
     client: Client,

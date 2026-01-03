@@ -25,6 +25,20 @@ class RustFunction(Construct):
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
         )
 
+        # GSI: ParentIndex (Query children)
+        self.table.add_global_secondary_index(
+            index_name="ParentIndex",
+            partition_key=dynamodb.Attribute(name="parentId", type=dynamodb.AttributeType.STRING),
+            projection_type=dynamodb.ProjectionType.ALL
+        )
+
+        # GSI: TypeIndex (Filter by type)
+        self.table.add_global_secondary_index(
+            index_name="TypeIndex",
+            partition_key=dynamodb.Attribute(name="type", type=dynamodb.AttributeType.STRING),
+            projection_type=dynamodb.ProjectionType.ALL
+        )
+
         self.function = lambda_.Function(
             self,
             "Function",
